@@ -1,9 +1,9 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "huase.shanhaixiantu.mixin",
+  "package": "huase.doupocangqiong.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "shanhaixiantu.refmap.json",
+  "refmap": "doupocangqiong.refmap.json",
   "mixins": [
   ],
   "client": [

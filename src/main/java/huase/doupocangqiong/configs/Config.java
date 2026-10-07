@@ -1,6 +1,6 @@
-package huase.shanhaixiantu.configs;
+package huase.doupocangqiong.configs;
 
-import huase.shanhaixiantu.ModMain;
+import huase.doupocangqiong.ModMain;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ForgeConfigSpec;
