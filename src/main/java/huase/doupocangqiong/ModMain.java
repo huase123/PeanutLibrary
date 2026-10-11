@@ -1,9 +1,13 @@
 package huase.doupocangqiong;
 
 import com.mojang.logging.LogUtils;
+import huase.doupocangqiong.compat.curios.CurioPredicate;
 import huase.doupocangqiong.configs.Config;
+import huase.doupocangqiong.datagens.worlds.chunkgenerator.ChunkGeneratorInti;
+import huase.doupocangqiong.items.ItemsRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -30,12 +34,15 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
 
+import java.util.Locale;
+
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(ModMain.MODID)
 public class ModMain {
 
     // Define mod id in a common place for everything to reference
     public static final String MODID = "doupocangqiong";
+    public static final String MOD_ID = "doupocangqiong";
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
     // Create a Deferred Register to hold Blocks which will all be registered under the "doupocangqiong" namespace
@@ -63,7 +70,7 @@ public class ModMain {
             }).build());
 
     public ModMain() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        IEventBus modEventBus = FMLJavaModLoadingContext    .get().getModEventBus();
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
@@ -72,9 +79,11 @@ public class ModMain {
         BLOCKS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
         ITEMS.register(modEventBus);
+        ItemsRegistries.ITEMS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
 
+        ChunkGeneratorInti.CHUNK_GENERATOR_REGISTRIES.register(modEventBus);
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
@@ -83,8 +92,18 @@ public class ModMain {
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+
+        CurioPredicate.registerCurioPredicate();
     }
 
+    public static ResourceLocation prefix(String name) {
+//        return ResourceLocation.fromNamespaceAndPath(MODID, name.toLowerCase(Locale.ROOT));
+        return new ResourceLocation(MODID, name.toLowerCase(Locale.ROOT));
+    }
+    public static ResourceLocation parse(String name) {
+//        return ResourceLocation.fromNamespaceAndPath(MODID, name.toLowerCase(Locale.ROOT));
+        return new ResourceLocation(name);
+    }
     private void commonSetup(final FMLCommonSetupEvent event) {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
