@@ -23,6 +23,7 @@ public class CuriosTestProvider extends CuriosDataProvider {
         // Generation code here
         this.createSlot(jingjie_slot)
                 .size(1)
+                .order(-1)
                 .dropRule(ICurio.DropRule.ALWAYS_KEEP)
                 .addCosmetic(false)
                 .addValidator(CurioPredicate.jingjie)

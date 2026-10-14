@@ -2,18 +2,18 @@ package huase.doupocangqiong.event.server;
 
 
 import huase.doupocangqiong.ModMain;
+import huase.doupocangqiong.datagens.curios.CuriosTestProvider;
+import huase.doupocangqiong.items.ItemsRegistries;
 import huase.doupocangqiong.registries.FirstJoinData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.curios.api.CuriosApi;
 
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = ModMain.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -33,8 +33,11 @@ public class RePlayerLoggedInEvent {
                                 .withStyle(ChatFormatting.GOLD)
                 );
                 CuriosApi.getCuriosInventory(player).ifPresent(inventory -> {
+                    inventory.getCurios().get(CuriosTestProvider.jingjie_slot).getStacks().setStackInSlot(0, ItemsRegistries.doupojingjie.get().getDefaultInstance());
+
+
 //                    inventory.addTransientSlotModifier("ring", UUID.nameUUIDFromBytes(("ring").getBytes(StandardCharsets.UTF_8)), "name", 2, AttributeModifier.Operation.ADDITION);
-                    inventory.addTransientSlotModifier("test_slot", UUID.nameUUIDFromBytes(("test_slot").getBytes(StandardCharsets.UTF_8)), "name", 2, AttributeModifier.Operation.ADDITION);
+//                    inventory.addTransientSlotModifier("test_slot", UUID.nameUUIDFromBytes(("test_slot").getBytes(StandardCharsets.UTF_8)), "name", 2, AttributeModifier.Operation.ADDITION);
 //                    inventory.addTransientSlotModifier("test_demo", UUID.nameUUIDFromBytes(("test_demo").getBytes(StandardCharsets.UTF_8)), "name", 2, AttributeModifier.Operation.ADDITION);
                 });
 //

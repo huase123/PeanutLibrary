@@ -5,9 +5,12 @@ import huase.doupocangqiong.compat.curios.CurioPredicate;
 import huase.doupocangqiong.configs.Config;
 import huase.doupocangqiong.datagens.worlds.chunkgenerator.ChunkGeneratorInti;
 import huase.doupocangqiong.items.ItemsRegistries;
+import huase.doupocangqiong.network.NetworkRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -34,6 +37,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
 
+import java.lang.reflect.Field;
 import java.util.Locale;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -44,7 +48,7 @@ public class ModMain {
     public static final String MODID = "doupocangqiong";
     public static final String MOD_ID = "doupocangqiong";
     // Directly reference a slf4j logger
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
     // Create a Deferred Register to hold Blocks which will all be registered under the "doupocangqiong" namespace
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     // Create a Deferred Register to hold Items which will all be registered under the "doupocangqiong" namespace
@@ -75,6 +79,7 @@ public class ModMain {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
+        NetworkRegistries.register();
         // Register the Deferred Register to the mod event bus so blocks get registered
         BLOCKS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
@@ -94,6 +99,8 @@ public class ModMain {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 
         CurioPredicate.registerCurioPredicate();
+
+        changeAttributesIO();
     }
 
     public static ResourceLocation prefix(String name) {
@@ -141,5 +148,26 @@ public class ModMain {
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
         }
+    }
+
+
+    public static void changeAttributesIO()  {
+
+        try {
+            Field privateField = RangedAttribute.class.getDeclaredFields()[1];
+            privateField.setAccessible(true);
+            //    修改血量上限
+            privateField.set(Attributes.MAX_HEALTH, Float.MAX_VALUE);
+            //    攻击伤害、物攻上限
+            privateField.set(Attributes.ATTACK_DAMAGE, Float.MAX_VALUE);
+            //    盔甲、物防上限
+            privateField.set(Attributes.ARMOR, Float.MAX_VALUE);
+            //    盔甲韧性、体魄上限
+            privateField.set(Attributes.ARMOR_TOUGHNESS, 100);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+//        添加物攻同步
+        Attributes.ATTACK_DAMAGE.setSyncable(true);
     }
 }

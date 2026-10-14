@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "doupocangqiong.refmap.json",
   "mixins": [
+    "ConnectionSendMixin"
   ],
   "client": [
   ],
