@@ -201,13 +201,13 @@
     //
     //    // 完整 Curios，仅运行时使用
     //    runtimeOnly fg.deobf("blank:curios-forge-5.14.2+1.20.1")
-        compileOnly fg.deobf("blank:curios-forge:5.14.2+1.20.1:api")
+//        compileOnly fg.deobf("blank:curios-forge:5.14.2+1.20.1:api")
 //        jarJar(fg.deobf("blank:curios-forge:5.14.2+1.20.1")) {
 //            jarJar.ranged(it, "[5.14.2+1.20.1,)")
 //        }
-        jarJar(fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")) {
-            jarJar.ranged(it, "[5.9,)")
-        }
+//        jarJar(fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")) {
+//            jarJar.ranged(it, "[5.9,)")
+//        }
 
 
     //显示mod

@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "huase.peanutlibrary.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "doupocangqiong.refmap.json",
+  "mixins": [
+    "ConnectionSendMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

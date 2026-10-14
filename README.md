@@ -1,2 +1,2 @@
-# doupocangqiong
-This is an MC module project
+# PeanutLibrary
+This is a code library for Forge mod development.
