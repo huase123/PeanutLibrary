@@ -14,8 +14,10 @@
         id 'idea'
         id 'net.minecraftforge.gradle' version '[6.0,6.2)'
         id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+        id 'maven-publish'
+        id 'signing'
     }
-    jarJar.enable()
+
     apply plugin: 'org.spongepowered.mixin'
 
     group = mod_group_id
@@ -271,6 +273,109 @@
         finalizedBy 'reobfJar'
     }
 
+
+    task apiJar(type: Jar) {
+        archiveClassifier.set('api')
+        include 'huase/peanutlibrary/**/*'
+        from sourceSets.main.allSource
+        from sourceSets.main.output
+    }
+
+    task sourcesJar(type: Jar) {
+        archiveClassifier.set('sources')
+        from sourceSets.main.allJava
+    }
+// 生成 Javadoc 的 Jar
+//    task javadocJar(type: Jar) {
+//        archiveClassifier.set('javadoc')
+//        from javadoc
+//    }
+    tasks.register('emptyJavadocJar', Jar) {
+        archiveClassifier.set('javadoc')
+        // 可选：加入占位说明文件
+        from(layout.projectDirectory.file('README.md')) {
+            into ''
+        }
+    }
+// 让 build/assemble 也顺带生成
+    tasks.named('assemble').configure {
+        dependsOn 'emptyJavadocJar'
+    }
+    artifacts {
+//        打包api与sources
+        archives apiJar
+        archives sourcesJar
+//        archives javadocJar
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+//                artifactId project.archivesBaseName
+                artifact jar
+                artifact sourcesJar
+                artifact apiJar
+//                artifact javadocJar
+
+                artifact(tasks.named('emptyJavadocJar')) // 显式添加空 javadoc jar
+                // 新增 POM 元数据
+                pom {
+                    name = 'PeanutLibrary'
+                    description = '你的模组描述'
+                    url = 'https://github.com/你的用户名/你的仓库' // 项目主页，可以是 GitHub 地址
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0' // 或你实际使用的许可证
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'huase123'
+                            name = '你的名字'
+                            email = '你的邮箱@example.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/你的用户名/你的仓库.git'
+                        developerConnection = 'scm:git:ssh://github.com/你的用户名/你的仓库.git'
+                        url = 'https://github.com/你的用户名/你的仓库'
+                    }
+                }
+
+            }
+        }
+        repositories {
+            if (project.hasProperty('urlMaven')) {
+                if (project.hasProperty('userMaven') && project.hasProperty('passMaven')) {
+                    maven {
+                        url urlMaven
+                        credentials {
+                            username userMaven
+                            password passMaven
+                        }
+                    }
+                }
+            }
+        }
+    }
+    signing {
+        sign publishing.publications.mavenJava
+    }
+
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+    }
+    tasks.withType(Javadoc).configureEach {
+        options.encoding = 'UTF-8'
+        options.charSet = 'UTF-8'
+        // 可选：忽略文档注释中的错误，避免因格式问题导致构建失败
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+
+    tasks.withType(JavaExec).configureEach {
+        if (name == 'reobfJar') {
+            // 启用参数文件，规避 Windows 命令行长度限制
+            args '--use-argument-file'
+        }
     }
