@@ -14,8 +14,7 @@
         id 'idea'
         id 'net.minecraftforge.gradle' version '[6.0,6.2)'
         id 'org.parchmentmc.librarian.forgegradle' version '1.+'
-        id 'maven-publish'
-        id 'signing'
+        id "com.vanniktech.maven.publish" version "0.34.0"
     }
 
     apply plugin: 'org.spongepowered.mixin'
@@ -273,94 +272,12 @@
         finalizedBy 'reobfJar'
     }
 
-
-    task apiJar(type: Jar) {
+    tasks.register('apiJar', Jar) {
         archiveClassifier.set('api')
-        include 'huase/peanutlibrary/**/*'
-        from sourceSets.main.allSource
-        from sourceSets.main.output
-    }
-
-    task sourcesJar(type: Jar) {
-        archiveClassifier.set('sources')
-        from sourceSets.main.allJava
-    }
-// 生成 Javadoc 的 Jar
-//    task javadocJar(type: Jar) {
-//        archiveClassifier.set('javadoc')
-//        from javadoc
-//    }
-    tasks.register('emptyJavadocJar', Jar) {
-        archiveClassifier.set('javadoc')
-        // 可选：加入占位说明文件
-        from(layout.projectDirectory.file('README.md')) {
-            into ''
+        dependsOn tasks.named('jar')
+        from(zipTree(tasks.named('jar').get().archiveFile)) {
+            include 'huase/peanutlibrary/api/**/*'
         }
-    }
-// 让 build/assemble 也顺带生成
-    tasks.named('assemble').configure {
-        dependsOn 'emptyJavadocJar'
-    }
-    artifacts {
-//        打包api与sources
-        archives apiJar
-        archives sourcesJar
-//        archives javadocJar
-    }
-
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-//                artifactId project.archivesBaseName
-                artifact jar
-                artifact sourcesJar
-                artifact apiJar
-//                artifact javadocJar
-
-                artifact(tasks.named('emptyJavadocJar')) // 显式添加空 javadoc jar
-                // 新增 POM 元数据
-                pom {
-                    name = 'PeanutLibrary'
-                    description = '你的模组描述'
-                    url = 'https://github.com/你的用户名/你的仓库' // 项目主页，可以是 GitHub 地址
-                    licenses {
-                        license {
-                            name = 'The Apache License, Version 2.0' // 或你实际使用的许可证
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        }
-                    }
-                    developers {
-                        developer {
-                            id = 'huase123'
-                            name = '你的名字'
-                            email = '你的邮箱@example.com'
-                        }
-                    }
-                    scm {
-                        connection = 'scm:git:git://github.com/你的用户名/你的仓库.git'
-                        developerConnection = 'scm:git:ssh://github.com/你的用户名/你的仓库.git'
-                        url = 'https://github.com/你的用户名/你的仓库'
-                    }
-                }
-
-            }
-        }
-        repositories {
-            if (project.hasProperty('urlMaven')) {
-                if (project.hasProperty('userMaven') && project.hasProperty('passMaven')) {
-                    maven {
-                        url urlMaven
-                        credentials {
-                            username userMaven
-                            password passMaven
-                        }
-                    }
-                }
-            }
-        }
-    }
-    signing {
-        sign publishing.publications.mavenJava
     }
 
     tasks.withType(JavaCompile).configureEach {
@@ -377,5 +294,52 @@
         if (name == 'reobfJar') {
             // 启用参数文件，规避 Windows 命令行长度限制
             args '--use-argument-file'
+        }
+    }
+
+    mavenPublishing {
+        // 不需要传 SonatypeHost，0.33.0 版本默认走 Central Portal [citation:1]
+        publishToMavenCentral()
+
+        // 启用 GPG 签名
+        signAllPublications()
+
+        // 如果你希望上传后自动发布（跳过手动点 Publish 按钮），加上这一行
+        // publishToMavenCentral(true)  // 参数为 true 表示自动发布 [citation:1]
+
+        coordinates(group.toString(), mod_id, mod_version)
+
+        pom {
+            name = mod_name
+            description = mod_description
+            url = github_url
+            licenses {
+                license {
+                    name = mod_license
+                    url = mod_license_url
+                }
+            }
+            developers {
+                developer {
+                    id = mod_group_id
+                    name = mod_authors
+                    email = mod_authors_email
+                }
+            }
+            scm {
+                connection = github_url_connection
+                developerConnection = github_url_connection
+                url = github_url
+            }
+        }
+    }
+    // 将 apiJar 注册到 Maven 发布中
+    afterEvaluate {
+        publishing {
+            publications {
+                maven(MavenPublication) {
+                    artifact tasks.named('apiJar')
+                }
+            }
         }
     }
