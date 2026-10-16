@@ -2,11 +2,15 @@ package huase.peanutlibrary;
 
 import com.mojang.logging.LogUtils;
 import huase.peanutlibrary.network.NetworkRegistries;
+import huase.peanutlibrary.registers.ButtonMenuContext;
+import huase.peanutlibrary.registers.RegisterButtonMenus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -14,9 +18,15 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistry;
+import net.minecraftforge.registries.RegistryManager;
 import org.slf4j.Logger;
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(ModMain.MODID)
@@ -28,6 +38,7 @@ public class ModMain {
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
 
+    public static final Map<Class<?>, List<ButtonMenuContext>> ButtonMenusRegistry = new HashMap<>();
     public ModMain() {
         IEventBus modEventBus = FMLJavaModLoadingContext    .get().getModEventBus();
 
@@ -38,7 +49,7 @@ public class ModMain {
         MinecraftForge.EVENT_BUS.register(this);
 
 
-
+        RegisterButtonMenus.register();
         changeAttributesIO();
     }
 

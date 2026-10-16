@@ -3,7 +3,7 @@
   "minVersion": "0.8",
   "package": "huase.peanutlibrary.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "doupocangqiong.refmap.json",
+  "refmap": "peanutlibrary.refmap.json",
   "mixins": [
     "ConnectionSendMixin",
     "MixinPlayer"

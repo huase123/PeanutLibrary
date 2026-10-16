@@ -1,6 +1,7 @@
 package huase.peanutlibrary.network;
 
 import huase.peanutlibrary.ModMain;
+import huase.peanutlibrary.network.client.CPButtonPressPacket;
 import huase.peanutlibrary.network.server.ReClientboundUpdateAttributesPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
@@ -26,6 +27,7 @@ public class NetworkRegistries {
         .serverAcceptedVersions(PTC_VERSION::equals).simpleChannel();
 
     //Client Packets
+    register(CPButtonPressPacket.class, CPButtonPressPacket::encode, CPButtonPressPacket::decode, CPButtonPressPacket::handle);
 
     // Server Packets
     register(ReClientboundUpdateAttributesPacket.class, ReClientboundUpdateAttributesPacket::encode, ReClientboundUpdateAttributesPacket::decode, ReClientboundUpdateAttributesPacket::handle);
